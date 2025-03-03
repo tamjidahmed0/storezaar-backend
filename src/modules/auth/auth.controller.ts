@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { GoogleAuthGuard } from "./guard/google.guard";
 import { InjectModel } from "@nestjs/mongoose";
@@ -18,15 +18,20 @@ export class AuthController {
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    // async googleAuth() {
-    //     return { message: 'Redirecting to Google' };
-    // }
+    async googleAuth() {
+        return { message: 'Redirecting to Google' };
+    }
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req: any) {
+   async googleAuthRedirect(@Req() req: any , @Res() res: any) {
 
-        return this.authService.findOrCreateUser(req)
+        //  this.authService.findOrCreateUser(req, res)
+        const user = await this.authService.findOrCreateUser(req);
+
+        console.log(user, 'user');
+
+        return res.redirect(`http://localhost:3000/signup?token=${user.token}&&userId=${user._id.toString()}`)
 
     }
 }

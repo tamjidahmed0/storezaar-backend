@@ -10,12 +10,24 @@ export class userServices{
      ){}
 
 
-     findOrCreateUser() : any{
-         
-     }
+ async getUsers(id : string){
+    console.log(id, 'params');
+    
+        const user = await this.userModel.findById(id)
+        console.log(user, 'user');
+
+        if(user !== null){
+            return user
+
+        }else{
+            return {
+                msg: 'User not found'
+            }
+        }
+     
 
 
-
+  }
 
 
 

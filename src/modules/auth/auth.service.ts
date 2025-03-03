@@ -13,43 +13,78 @@ export class AuthService {
 
 
 
-    async findOrCreateUser(req: any) {
+    // async findOrCreateUser(req: any, res: any) { 
+    //     const existingUser = await this.userModel.findOne({ email: req.user.email });
+    //     console.log(existingUser)
+
+    //     if (existingUser !== null) {
+    //         const payload = {
+    //             userId: existingUser._id,
+    //         }
+
+ 
+    //         return {
+    //             ...existingUser,
+    //             token: this.jwt.sign(payload, {
+    //                 secret: process.env.ACCESS_TOKEN,
+
+    //             })
+    //         }
+
+    //     } else {
+    //         const newUser = await new this.userModel(req.user).save()
+    //         const payload = {
+    //             userId: newUser._id,
+    //         }
+
+
+    //         return {
+    //             ...newUser,
+    //             token: this.jwt.sign(payload, {
+    //                 secret: process.env.ACCESS_TOKEN
+    //             })
+    //         }
+    //     }
+
+
+
+
+    // }
+
+
+
+
+
+
+    async findOrCreateUser(req: any) { 
         const existingUser = await this.userModel.findOne({ email: req.user.email });
-        console.log(existingUser)
-
-        if (existingUser !== null) {
-            const payload = {
-                userId: existingUser._id,
-            }
-
-            
+    
+        if (existingUser) {
+            const user = existingUser.toObject();
+            const payload = { userId: user._id.toString() };
+    
             return {
-                ...existingUser,
+                ...user,  
                 token: this.jwt.sign(payload, {
                     secret: process.env.ACCESS_TOKEN,
-                
+                    expiresIn: "7d",
                 })
-            }
-
-        } else {
-            const newUser = await new this.userModel(req.user).save()
-            const payload = {
-                userId: newUser._id,
-            }
-
-
-            return {
-                ...newUser,
-                token: this.jwt.sign(payload, {
-                    secret: process.env.ACCESS_TOKEN
-                })
-            }
-        }
-
-
-
-
+            };
+        } 
+    
+        const newUser = await new this.userModel(req.user).save();
+        const user = newUser.toObject(); 
+        const payload = { userId: user._id.toString() };
+    
+        return {
+            ...user,  
+            token: this.jwt.sign(payload, {
+                secret: process.env.ACCESS_TOKEN,
+                expiresIn: "7d",
+            })
+        };
     }
+    
 
 
 
